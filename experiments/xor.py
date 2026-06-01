@@ -3,7 +3,6 @@ import numpy as np
 import sys
 import pathlib
 sys.path.append(str(pathlib.Path(__file__).parent.parent))
-from optimizers.SGD import SGD
 from activations.Sigmoid import sigmoid
 from activations.ReLu import ReLU
 from layers.Dense import Dense

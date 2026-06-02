@@ -4,6 +4,9 @@ from activations.ReLu import ReLU
 from layers.Dense import Dense
 from activations.Sigmoid import sigmoid
 from losses.BinaryCrossEntropy import BinaryCrossEntropy
+from losses.MSE import Mse
+from activations.Softmax import Softmax
+
 
 
 
@@ -41,9 +44,9 @@ class NeuralNetwork:
 
     def evaluate(self, X, y):
 
-        predictions = self.forward(X)
-        predicted_classes = (predictions > 0.5).astype(int)
-        accuracy = np.mean(predicted_classes == y)
+        predictions = self.predict(X)
+        predictions_binary = (predictions > 0.5).astype(int)
+        accuracy = np.mean(predictions_binary == y)
         return accuracy
 
     def plot_actual_vs_predicted(self, X, y):
@@ -56,21 +59,64 @@ class NeuralNetwork:
         plt.legend()
         plt.show()
 
-    def fit(self, X, y, epochs, learning_rate):
+    def plottrainlossVStestloss(self, train_losses, test_losses):
+        plt.plot(train_losses, label='Train Loss')
+        plt.plot(test_losses, label='Test Loss')
+        plt.xlabel('Epoch')
+        plt.ylabel('Loss')
+        plt.legend()
+        plt.show()
+
+
+
+
+
+    
+    def fit(self, X, y, epochs, learning_rate, batch_size, loss_function = None, test_size = 0.0):
+
+        if loss_function is None:
+            raise ValueError("batch_train requires a loss_function")
+
+        if test_size > 0.0:
+            split_index = int((1 - test_size) * len(X))
+            X_train, X_test = X[:split_index], X[split_index:]
+            y_train, y_test = y[:split_index], y[split_index:]
+        else:
+            X_train, X_test = X, X
+            y_train, y_test = y, y
+
+        train_losses = []
+        test_losses = []
 
         for epoch in range(epochs):
+            epoch_loss = 0.0
+            num_batches = 0
+            for start in range(0, len(X_train), batch_size):
+                end = start + batch_size
+                X_batch = X_train[start:end]
+                y_batch = y_train[start:end]
 
-            predictions = self.forward(X)
+                predictions = self.forward(X_batch)
+                batch_loss = loss_function.forward(predictions, y_batch)
+                self.backward(loss_function.backward(), learning_rate)
 
-            loss = BinaryCrossEntropy()
-            loss_value = loss.forward(predictions, y)
-            self.backward(loss.backward(), learning_rate) 
+                epoch_loss += batch_loss
+                num_batches += 1
+
+            epoch_loss /= num_batches
+            train_losses.append(epoch_loss)
+
+            test_predictions = self.forward(X_test)
+            test_loss = loss_function.forward(test_predictions, y_test)
+            test_losses.append(test_loss)
+
             if epoch % 100 == 0:
-                print(f"Epoch {epoch+1}/{epochs}, Loss: {loss_value}")
-            final_predictions = self.forward(X)
+                print(f"Epoch {epoch+1}/{epochs}, Train Loss: {epoch_loss}, Test Loss: {test_loss}")
+
+        final_predictions = self.forward(X)
         print("Accuracy: ", self.evaluate(X, y))
-        self.plot_actual_vs_predicted(X, y)
-
-        return final_predictions
-
-
+        self.plottrainlossVStestloss(train_losses, test_losses)
+        return train_losses, test_losses
+    
+    def batch_train(self, X, y, epochs, learning_rate, batch_size, loss_function, test_size=0.0):
+        return self.fit(X, y, epochs, learning_rate, batch_size, loss_function, test_size=test_size)

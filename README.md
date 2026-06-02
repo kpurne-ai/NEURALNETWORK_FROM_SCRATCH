@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project is a small neural network implementation from scratch using `numpy`. It includes core components such as dense layers, activation functions, loss functions, an optimizer, and an XOR training example.
+This project is a small neural network implementation from scratch using `numpy`. It includes core components such as dense layers, activation functions, loss functions, an optimizer, and an XOR, deep_netowrk training example.
 
 ## Project Structure
 
@@ -22,6 +22,7 @@ This project is a small neural network implementation from scratch using `numpy`
   - Stochastic Gradient Descent optimizer.
 - `experiments/xor.py`
   - XOR dataset training example.
+  - DeepNN training example
 
 ## Requirements
 

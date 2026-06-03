@@ -4,8 +4,6 @@ from activations.ReLu import ReLU
 from layers.Dense import Dense
 from activations.Sigmoid import sigmoid
 from losses.BinaryCrossEntropy import BinaryCrossEntropy
-from losses.MSE import Mse
-from activations.Softmax import Softmax
 
 
 
@@ -47,6 +45,9 @@ class NeuralNetwork:
         predictions = self.predict(X)
         predictions_binary = (predictions > 0.5).astype(int)
         accuracy = np.mean(predictions_binary == y)
+        predictions = self.predict(X)
+        predictions_binary = (predictions > 0.5).astype(int)
+        accuracy = np.mean(predictions_binary == y)
         return accuracy
 
     def plot_actual_vs_predicted(self, X, y):
@@ -67,15 +68,10 @@ class NeuralNetwork:
         plt.legend()
         plt.show()
 
-
-
-
-
-    
-    def fit(self, X, y, epochs, learning_rate, batch_size, loss_function = None, test_size = 0.0):
+    def fit(self, X, y, epochs, learning_rate, loss_function, batch_size=None, test_size=0.0):
 
         if loss_function is None:
-            raise ValueError("batch_train requires a loss_function")
+            raise ValueError("fit requires a loss_function")
 
         if test_size > 0.0:
             split_index = int((1 - test_size) * len(X))
@@ -89,21 +85,27 @@ class NeuralNetwork:
         test_losses = []
 
         for epoch in range(epochs):
-            epoch_loss = 0.0
-            num_batches = 0
-            for start in range(0, len(X_train), batch_size):
-                end = start + batch_size
-                X_batch = X_train[start:end]
-                y_batch = y_train[start:end]
-
-                predictions = self.forward(X_batch)
-                batch_loss = loss_function.forward(predictions, y_batch)
+            if batch_size is None:
+                predictions = self.forward(X_train)
+                epoch_loss = loss_function.forward(predictions, y_train)
                 self.backward(loss_function.backward(), learning_rate)
+            else:
+                epoch_loss = 0.0
+                num_batches = 0
+                for start in range(0, len(X_train), batch_size):
+                    end = start + batch_size
+                    X_batch = X_train[start:end]
+                    y_batch = y_train[start:end]
 
-                epoch_loss += batch_loss
-                num_batches += 1
+                    predictions = self.forward(X_batch)
+                    batch_loss = loss_function.forward(predictions, y_batch)
+                    self.backward(loss_function.backward(), learning_rate)
 
-            epoch_loss /= num_batches
+                    epoch_loss += batch_loss
+                    num_batches += 1
+
+                epoch_loss /= num_batches
+
             train_losses.append(epoch_loss)
 
             test_predictions = self.forward(X_test)
@@ -111,12 +113,20 @@ class NeuralNetwork:
             test_losses.append(test_loss)
 
             if epoch % 100 == 0:
-                print(f"Epoch {epoch+1}/{epochs}, Train Loss: {epoch_loss}, Test Loss: {test_loss}")
+                if test_size > 0.0:
+                    print(f"Epoch {epoch+1}/{epochs}, Train Loss: {epoch_loss}, Test Loss: {test_loss}")
+                else:
+                    print(f"Epoch {epoch+1}/{epochs}, Loss: {epoch_loss}")
 
         final_predictions = self.forward(X)
+        self.train_losses = train_losses
+        self.test_losses = test_losses
         print("Accuracy: ", self.evaluate(X, y))
         self.plottrainlossVStestloss(train_losses, test_losses)
-        return train_losses, test_losses
+        return final_predictions
+
+
+
     
-    def batch_train(self, X, y, epochs, learning_rate, batch_size, loss_function, test_size=0.0):
-        return self.fit(X, y, epochs, learning_rate, batch_size, loss_function, test_size=test_size)
+    def batch_train(self, X, y, epochs, learning_rate, batch_size, loss_function=None, test_size=0.0):
+        return self.fit(X, y, epochs, learning_rate, loss_function, batch_size=batch_size, test_size=test_size)

@@ -8,6 +8,10 @@ from activations.Sigmoid import sigmoid
 from activations.ReLu import ReLU
 from layers.Dense import Dense
 from losses.BinaryCrossEntropy import BinaryCrossEntropy
+from losses.MSE import Mse
+from losses.MAE import MAE
+from activations.Softmax import Softmax
+
 
 from network.NeuralNetwork import NeuralNetwork
 nn = NeuralNetwork()
@@ -23,4 +27,4 @@ nn.add(ReLU())
 nn.add(Dense(4, 1))
 nn.add(sigmoid())
 
-nn.fit(X, y, epochs=1000, learning_rate=0.01)
+nn.fit(X, y, epochs=1000, learning_rate=0.01, loss_function=BinaryCrossEntropy(), test_size=0.2)

@@ -4,8 +4,9 @@ from activations.ReLu import ReLU
 from layers.Dense import Dense
 from activations.Sigmoid import sigmoid
 from losses.BinaryCrossEntropy import BinaryCrossEntropy
-
-
+from activations.Softmax import Softmax
+from losses.MSE import Mse
+from losses.MAE import MAE
 
 
 class NeuralNetwork:

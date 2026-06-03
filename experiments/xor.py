@@ -8,6 +8,10 @@ from activations.Sigmoid import sigmoid
 from activations.ReLu import ReLU
 from layers.Dense import Dense
 from losses.BinaryCrossEntropy import BinaryCrossEntropy
+from losses.MSE import Mse
+from losses.MAE import MAE
+from activations.Softmax import Softmax
+
 
 from network.NeuralNetwork import NeuralNetwork
 nn = NeuralNetwork()

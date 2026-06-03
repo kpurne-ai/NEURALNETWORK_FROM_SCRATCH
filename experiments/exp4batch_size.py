@@ -8,6 +8,7 @@ from activations.Sigmoid import sigmoid
 from activations.ReLu import ReLU
 from activations.Softmax import Softmax
 from layers.Dense import Dense
+from layers.Dropout import Dropout
 from losses.BinaryCrossEntropy import BinaryCrossEntropy
 from losses.MSE import Mse
 from losses.MAE import MAE
@@ -22,6 +23,7 @@ y = np.array([[1] if x[0] > 0.5 and x[1] > 0.5 else [0] for x in X])
 nn.add(Dense(8, 16))
 nn.add(ReLU())
 nn.add(Dense(16, 8))
+#nn.add(Dropout(0.5))
 nn.add(ReLU())
 nn.add(Dense(8, 1))
 nn.add(sigmoid())

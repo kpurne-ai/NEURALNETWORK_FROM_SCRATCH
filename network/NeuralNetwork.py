@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from activations.ReLu import ReLU
 from layers.Dense import Dense
+from layers.Dropout import Dropout
 from activations.Sigmoid import sigmoid
 from losses.BinaryCrossEntropy import BinaryCrossEntropy
 from activations.Softmax import Softmax

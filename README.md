@@ -91,6 +91,7 @@ This runs the XOR example and prints loss/accuracy during training.
 ## Notes
 
 - Each layer implements `forward()` and `backward()`.
+- Training uses backpropagation with SGD-style gradient updates through the network.
 - `NeuralNetwork.fit()` supports `batch_size` and `test_size` for flexible training.
 - `NeuralNetwork.batch_train()` is an alias for `fit()` with `batch_size`.
 - The network currently uses a simple manual training loop without a separate optimizer module.
